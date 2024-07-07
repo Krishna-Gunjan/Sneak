@@ -1,5 +1,7 @@
 import pygame
 import sys
+import json
+import os
 
 WALL_COLOR = (102, 113, 126)
 SEEKER_COLOR = (255, 255, 0)
@@ -8,6 +10,19 @@ END_COLOR = (0, 255, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 CIRCLE_COLOR = (255, 192, 203, 128)
 TEXT_COLOR = (255, 255, 255)
+
+def read_json():
+
+    try:
+        file_path = os.path.relpath('theme.json')
+
+        with open(file_path, 'r') as file:
+            colors = json.load(file)
+
+        return json
+    
+    except FileNotFoundError as e:
+        raise Exception("File not found")
 
 
 def read_grid(filename):

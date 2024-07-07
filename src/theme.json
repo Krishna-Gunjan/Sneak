@@ -1,0 +1,9 @@
+{
+    "WALL_COLOR": [102, 113, 126],
+    "SEEKER_COLOR": [255, 255, 0],
+    "START_COLOR": [255, 0, 0],
+    "END_COLOR": [0, 255, 0],
+    "BACKGROUND_COLOR": [0, 0, 0],
+    "CIRCLE_COLOR": [255, 192, 203, 128],
+    "TEXT_COLOR": [255, 255, 255]
+}
