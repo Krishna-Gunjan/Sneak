@@ -12,5 +12,5 @@ font = pygame.font.Font(None, 40)
 
 # Initialize maps
 map_reader = MapReader()
-current_map = map_reader.read_map()
-rows, cols = len(current_map), len(current_map[0])
+current_map = MapReader.readMap()
+rows, cols = MapReader.mapDimensions()
