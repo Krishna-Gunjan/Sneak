@@ -2,6 +2,7 @@ class MapReader():
 
     def __init__(self) -> None:
         self.current_stage = 1
+        self.total_stages = 3
         self.stage_path = f"maps\stage_{self.current_stage}.txt"
         self.stage = []
 

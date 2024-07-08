@@ -13,10 +13,10 @@ class MapDrawer:
         self.x_size = tile_size[0]
         self.y_size = tile_size[1]
         self.circle_radius = circle_radius
-        self.player_pos, self.seeker_positions = self.reset_game()
+        self.player_pos, self.seeker_positions = self.resetGame()
         self.colors = colors
 
-    def draw_grid(self, screen):
+    def drawMap(self, screen):
         
         for y, row in enumerate(self.grid):
             for x, cell in enumerate(row):
@@ -38,7 +38,7 @@ class MapDrawer:
         circle_center = (self.player_pos[0] * self.x_size + self.x_size // 2, self.player_pos[1] * self.y_size + self.y_size // 2)
         pygame.draw.circle(screen, self.colors["CIRCLE_COLOR"], circle_center, self.circle_radius, 3)
 
-    def reset_game(self):
+    def resetGame(self):
         player_pos = None
         seeker_positions = []
         for y, row in enumerate(self.grid):

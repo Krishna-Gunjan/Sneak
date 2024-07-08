@@ -1,0 +1,18 @@
+{
+    "win" : {
+        "win_text": "Level {stage} Cleared",
+        "next_level_text": "Press SPACE to go to the next level"
+    },
+
+    "lose" : {
+        "exit_text": "Press ESC to exit",
+        "lose_text": "YOU LOST",
+        "restart_text": "Press R to restart"
+    },
+
+    "exit" : {
+    "exit_text": "Press ESC to exit"
+    }
+
+  }
+  
