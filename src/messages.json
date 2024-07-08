@@ -5,7 +5,6 @@
     },
 
     "lose" : {
-        "exit_text": "Press ESC to exit",
         "lose_text": "YOU LOST",
         "restart_text": "Press R to restart"
     },
