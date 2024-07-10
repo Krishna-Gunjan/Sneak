@@ -19,20 +19,17 @@ map_reader = MapReader()
 current_map = map_reader.readMap()
 rows, cols = map_reader.mapDimensions()
 
-# Get Screen Dimensions
-user_dimensions = ScreenDimensions().getDimensions()
+# Initialize MapDrawer
+map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+screen_width, screen_height = map_rendoror.calculate_screen_size()
 
 # Initialize Screen
-renderor = Display((rows, cols))
-screen = renderor.setScreen()
-tile_size = renderor.getTileSize()
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+pygame.display.set_caption("Map Drawer")
 
 # Calculate a relative font size based on screen dimensions
-relative_font_size = int(min(user_dimensions[0], user_dimensions[1]) * 0.05)
+relative_font_size = int(min(screen_width, screen_height) * 0.05)
 font = pygame.font.Font(None, relative_font_size)
-
-# Initialise Map
-map_rendoror = MapDrawer(current_map, (rows, cols), 10, colors)
 
 # Initialize Player instance
 player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
@@ -49,6 +46,7 @@ clock = pygame.time.Clock()
 
 while running:
     screen.fill(colors["BACKGROUND_COLOR"])
+    screen_rect = screen.get_rect() 
 
     if GAME_WON:
         # WIN MESSAGE
@@ -64,7 +62,6 @@ while running:
         exit_message = font.render(exit_message_text, True, colors["TEXT_COLOR"])
 
         # Calculate positions
-        screen_rect = screen.get_rect()
         win_message_rect = win_message.get_rect(center=(screen_rect.centerx, screen_rect.centery - 40))
         next_level_message_rect = next_level_message.get_rect(center=(screen_rect.centerx, screen_rect.centery))
         exit_message_rect = exit_message.get_rect(center=(screen_rect.centerx, screen_rect.centery + 40))
@@ -82,13 +79,14 @@ while running:
             
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not GAME_COMPLETE:
-                    # Update the current map
+
                     if map_reader.total_stages > map_reader.current_stage: 
                         map_reader.current_stage += 1
                         current_map = map_reader.readMap()
                         rows, cols = map_reader.mapDimensions()
-                        renderor.map_dimensions = (rows, cols)
-                        screen = renderor.setScreen()
+                        map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+                        screen_width, screen_height = map_rendoror.calculate_screen_size()
+                        screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
                         player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                         GAME_WON = False
                     else:
@@ -98,7 +96,6 @@ while running:
                 elif event.key == pygame.K_ESCAPE:
                     running = False
 
-    # Game is still incomplete or lost
     else:
         map_rendoror.drawMap(screen=screen)
 
@@ -115,18 +112,17 @@ while running:
             seeker[2] = dir
 
         for seeker in seeker_positions:
-            seeker_center = (seeker[0] * int(tile_size[0]) + int(tile_size[0]) // 2, seeker[1] * int(tile_size[1]) + int(tile_size[1]) // 2)
-            circle_center = (player_position[0] * int(tile_size[0]) + int(tile_size[0]) // 2, player_position[1] * int(tile_size[1]) + int(tile_size[1]) // 2)
+            seeker_center = (seeker[0] * int(50) + int(50) // 2, seeker[1] * int(50) + int(50) // 2)
+            circle_center = (player_position[0] * int(50) + int(50) // 2, player_position[1] * int(50) + int(50) // 2)
             distance = ((seeker_center[0] - circle_center[0]) ** 2 + (seeker_center[1] - circle_center[1]) ** 2) ** 0.5
 
-            if distance < circle_radius + int(tile_size[0]) // 2:
+            if distance < circle_radius + int(50) // 2:
                 lose_message_text = messages["lose"]["lose_text"]
                 lose_message = font.render(lose_message_text, True, colors["TEXT_COLOR"])
                 
                 restart_message_text = messages["lose"]["restart_text"]
                 restart_message = font.render(restart_message_text, True, colors["TEXT_COLOR"])
 
-                # Calculate positions for lose and restart messages
                 lose_message_rect = lose_message.get_rect(center=(screen_rect.centerx, screen_rect.centery - 40))
                 restart_message_rect = restart_message.get_rect(center=(screen_rect.centerx, screen_rect.centery))
                 
@@ -142,8 +138,9 @@ while running:
 
                             current_map = map_reader.readMap()
                             rows, cols = map_reader.mapDimensions()
-                            renderor.map_dimensions = (rows, cols)
-                            screen = renderor.setScreen()
+                            map_rendoror = MapDrawer(current_map, (50, 50), 10, colors) 
+                            screen_width, screen_height = map_rendoror.calculate_screen_size()
+                            screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
                             player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                             GAME_WON = False
 
@@ -169,8 +166,9 @@ while running:
                             map_reader.current_stage += 1
                             current_map = map_reader.readMap()
                             rows, cols = map_reader.mapDimensions()
-                            renderor.map_dimensions = (rows, cols)
-                            screen = renderor.setScreen()
+                            map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+                            screen_width, screen_height = map_rendoror.calculate_screen_size()
+                            screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
                             player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                             GAME_WON = False
                         else:
@@ -195,7 +193,6 @@ while running:
 
         if not GAME_WON and event.type == pygame.KEYDOWN:
             map_rendoror.circle_radius = max(10, map_rendoror.circle_radius - 1)
-
 
     pygame.display.flip()
     clock.tick(10)

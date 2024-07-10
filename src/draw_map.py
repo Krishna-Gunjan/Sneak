@@ -1,23 +1,22 @@
 import pygame
 
 class MapDrawer:
-
-    def __init__(self,
-                 grid: list[list[str]],
-                 tile_size : tuple[float],
-                 circle_radius: int,
-                 colors
-                ):
-        
+    def __init__(self, grid, tile_size, circle_radius, colors):
         self.grid = grid
         self.x_size = tile_size[0]
         self.y_size = tile_size[1]
         self.circle_radius = circle_radius
-        self.player_pos, self.seeker_positions = self.resetGame()
         self.colors = colors
+        self.player_pos, self.seeker_positions = self.resetGame()
+
+    def calculate_screen_size(self):
+        num_rows = len(self.grid)
+        num_cols = len(self.grid[0])
+        screen_width = num_cols * self.x_size
+        screen_height = num_rows * self.y_size
+        return screen_width, screen_height
 
     def drawMap(self, screen):
-        
         for y, row in enumerate(self.grid):
             for x, cell in enumerate(row):
                 rect = pygame.Rect(x * self.x_size, y * self.y_size, self.x_size, self.y_size)
