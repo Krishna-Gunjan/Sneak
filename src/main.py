@@ -19,13 +19,16 @@ map_reader = MapReader()
 current_map = map_reader.readMap()
 rows, cols = map_reader.mapDimensions()
 
+# Initialise Display
+display_cords = Display((rows, cols))
+tile_size = display_cords.getTileSize()
+
 # Initialize MapDrawer
-map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+map_rendoror = MapDrawer(current_map, tile_size, 10, colors)
 screen_width, screen_height = map_rendoror.calculate_screen_size()
 
 # Initialize Screen
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
-pygame.display.set_caption("Map Drawer")
+screen = display_cords.setScreen()
 
 # Calculate a relative font size based on screen dimensions
 relative_font_size = int(min(screen_width, screen_height) * 0.05)
@@ -84,9 +87,9 @@ while running:
                         map_reader.current_stage += 1
                         current_map = map_reader.readMap()
                         rows, cols = map_reader.mapDimensions()
-                        map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+                        map_rendoror = MapDrawer(current_map, tile_size, 10, colors)
                         screen_width, screen_height = map_rendoror.calculate_screen_size()
-                        screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+                        screen = display_cords.setScreen()
                         player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                         GAME_WON = False
                     else:
@@ -98,54 +101,55 @@ while running:
 
     else:
         map_rendoror.drawMap(screen=screen)
-
         # Manage seeker's movements
         for seeker in seeker_positions:
             x, y, dir = seeker
             new_x = x + dir
-
+            # Debug prints
+            print(new_x)
             # If the seeker hits a wall, turn around and walk in another direction
             if new_x < 0 or new_x >= cols or current_map[y][new_x] == '#':
-                dir *= -1 
+                dir *= -1
             else:
                 seeker[0] = new_x
-            seeker[2] = dir
+            seeker[2] = dir  
 
+        # Drawing seekers
         for seeker in seeker_positions:
-            seeker_center = (seeker[0] * int(50) + int(50) // 2, seeker[1] * int(50) + int(50) // 2)
-            circle_center = (player_position[0] * int(50) + int(50) // 2, player_position[1] * int(50) + int(50) // 2)
+            seeker_center = (seeker[0] * int(tile_size[0]) + int(tile_size[0]) // 2, seeker[1] * int(tile_size[1]) + int(tile_size[1]) // 2)
+            circle_center = (player_position[0] * int(tile_size[0]) + int(tile_size[0]) // 2, player_position[1] * int(tile_size[1]) + int(tile_size[1]) // 2)
             distance = ((seeker_center[0] - circle_center[0]) ** 2 + (seeker_center[1] - circle_center[1]) ** 2) ** 0.5
 
             if distance < circle_radius + int(50) // 2:
                 lose_message_text = messages["lose"]["lose_text"]
                 lose_message = font.render(lose_message_text, True, colors["TEXT_COLOR"])
-                
+
                 restart_message_text = messages["lose"]["restart_text"]
                 restart_message = font.render(restart_message_text, True, colors["TEXT_COLOR"])
 
                 lose_message_rect = lose_message.get_rect(center=(screen_rect.centerx, screen_rect.centery - 40))
                 restart_message_rect = restart_message.get_rect(center=(screen_rect.centerx, screen_rect.centery))
-                
+
                 screen.blit(lose_message, lose_message_rect)
                 screen.blit(restart_message, restart_message_rect)
-                
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-                    
+
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_SPACE:
-
                             current_map = map_reader.readMap()
                             rows, cols = map_reader.mapDimensions()
-                            map_rendoror = MapDrawer(current_map, (50, 50), 10, colors) 
+                            map_rendoror = MapDrawer(current_map, tile_size, 10, colors) 
                             screen_width, screen_height = map_rendoror.calculate_screen_size()
-                            screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+                            screen = display_cords.setScreen()
                             player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                             GAME_WON = False
 
                         elif event.key == pygame.K_ESCAPE:
                             running = False
+
         if current_map[player_position[1]][player_position[0]] == 'E':
             GAME_WON = True
 
@@ -166,9 +170,9 @@ while running:
                             map_reader.current_stage += 1
                             current_map = map_reader.readMap()
                             rows, cols = map_reader.mapDimensions()
-                            map_rendoror = MapDrawer(current_map, (50, 50), 10, colors)
+                            map_rendoror = MapDrawer(current_map, tile_size, 10, colors)
                             screen_width, screen_height = map_rendoror.calculate_screen_size()
-                            screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+                            screen = display_cords.setScreen()
                             player_position, seeker_positions = map_rendoror.player_pos, map_rendoror.seeker_positions
                             GAME_WON = False
                         else:

@@ -1,7 +1,5 @@
 import pygame
-import ctypes
 from screen_dimensions import ScreenDimensions
-from map_reader import MapReader
 
 class Display():
 
