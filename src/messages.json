@@ -1,17 +1,5 @@
 {
-    "win" : {
-        "win_text": "Level {stage} Cleared",
-        "next_level_text": "Press SPACE to go to the next level"
-    },
-
-    "lose" : {
-        "lose_text": "YOU LOST",
-        "restart_text": "Press R to restart"
-    },
-
-    "exit" : {
-    "exit_text": "Press ESC to exit"
-    }
-
-  }
-  
+    "win": "YOU WON",
+    "next_level": "Press SPACE to go to the next level",
+    "exit": "Press ESC to exit"
+}

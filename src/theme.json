@@ -4,6 +4,6 @@
     "START_COLOR": [255, 0, 0],
     "END_COLOR": [0, 255, 0],
     "BACKGROUND_COLOR": [0, 0, 0],
-    "CIRCLE_COLOR": [255, 192, 203, 128],
+    "CIRCLE_COLOR": [255, 0, 0],
     "TEXT_COLOR": [255, 255, 255]
 }

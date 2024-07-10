@@ -1,19 +1,4 @@
-class MapReader():
-
-    def __init__(self) -> None:
-        self.current_stage = 1
-        self.total_stages = 3
-        self.stage = []
-
-    def readMap(self) -> list[list[str]]:
-        
-        self.stage_path = f"maps\stage_{self.current_stage}.txt"
-
-        with open(self.stage_path, 'r') as file:
-
-            self.stage = [list(row.strip()) for row in file.readlines()]
-
-        return self.stage
-    
-    def mapDimensions(self):
-        return (len(self.stage[0]), len(self.stage))
+def read_grid(filename):
+    with open(filename, 'r') as file:
+        grid = [list(line.strip()) for line in file.readlines()]
+    return grid
