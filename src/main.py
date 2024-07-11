@@ -22,7 +22,7 @@ class SeekerGame:
 
         # Track current stage and remaining stage
         self.stages: int = len([file for file in (os.listdir(r"maps")) if file.endswith('.txt')])
-        self.current_stage: int = 1
+        self.current_stage: int = 4
 
         # Read theme
         self.theme: dict = read_theme(r'src\theme.json')
