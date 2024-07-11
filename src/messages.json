@@ -1,5 +1,9 @@
 {
     "win": "YOU WON",
     "next_level": "Press SPACE to go to the next level",
-    "exit": "Press ESC to exit"
+    "exit": "Press ESC to exit",
+    
+    "comment_" : "JSON does not support comment so here we are",
+    "comment__" : "So, what is this file?",
+    "comment___" : "It was faster and more accessible to use json then make an variable"
 }

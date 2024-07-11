@@ -100,7 +100,7 @@ class SeekerGame:
                 if event.key == pygame.K_SPACE and not self.all_levels_cleared:
 
                     self.current_stage += 1
-                    if self.current_stage <= len(self.stages):
+                    if self.current_stage <= self.stages:
 
                         # Read next stage map
                         self.grid = read_grid(f'maps\\stage_{self.current_stage}.txt')
@@ -153,7 +153,7 @@ class SeekerGame:
 
             # Check -> Passed
             self.game_won = True
-            if self.current_stage == len(self.stages) - 1:
+            if self.current_stage == self.stages:
                 self.all_levels_cleared = True
 
         for event in pygame.event.get():

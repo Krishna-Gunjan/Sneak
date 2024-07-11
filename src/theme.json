@@ -5,5 +5,9 @@
     "END_COLOR": [0, 255, 0],
     "BACKGROUND_COLOR": [0, 0, 0],
     "CIRCLE_COLOR": [255, 0, 0],
-    "TEXT_COLOR": [255, 255, 255]
+    "TEXT_COLOR": [255, 255, 255],
+
+    "comment_" : "Hello there! Read comment_ and comment__ for more info",
+    "comment__" : "This file manages the diffrent color scheme, definitely not from coolors",
+    "comment___" : "Reason for this file: SAME :3"
 }
