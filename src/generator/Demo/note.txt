@@ -1,0 +1,10 @@
+Reason for Failure
+
+- does not handle collectabels
+
+Reason for non - implementation
+
+- primitive
+- No  use of algorithms
+
+TO be used as a base for future models

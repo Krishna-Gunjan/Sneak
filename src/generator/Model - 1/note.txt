@@ -1,0 +1,7 @@
+Reasons for Failure
+
+- Too slow 
+    
+    ! Cannot generate a single maze 
+    ! ran for over 20 minutes
+
