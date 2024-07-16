@@ -153,15 +153,20 @@ class SeekerGame:
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
+
                     # Get new map dimensions
                     self.rows, self.cols = len(self.grid), len(self.grid[0])
+
                     # Calculate tile size
                     self.x_size = self.screen_width / self.cols
                     self.y_size = self.screen_height / self.rows
+
                     # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions = self.game_map.resetGame()
                     self.game_won = False
+
+                    self.initial_circle_radius = self.default_radius
 
                 elif event.key == pygame.K_ESCAPE:
                     # User wants to end game
