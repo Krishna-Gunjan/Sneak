@@ -54,7 +54,7 @@ class Display:
             self, 
             cols: int, 
             rows: int, 
-            all_levels_cleared: bool
+            all_levels_cleared: bool = False
         ) -> None:
         
         """

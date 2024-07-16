@@ -1,6 +1,6 @@
 import random
 
-class RandomMap:
+class MapGenerator:
     def __init__(self, width=68, height=15, points=15, collectibles=5):
         self.width = width
         self.height = height
@@ -8,7 +8,7 @@ class RandomMap:
         self.collectibles = collectibles
         self.map = []
 
-    def generate_map(self):
+    def generateMap(self):
         """ Generate a random map with walls, empty spaces, coins, and collectibles """
         while True:
             self.map = [['#' for _ in range(self.width)] for _ in range(self.height)]
@@ -26,25 +26,25 @@ class RandomMap:
             self.map[end[1]][end[0]] = 'E'
 
             # Place coins
-            coins = [self.place_coin() for _ in range(self.points)]
+            coins = [self.placeCoins() for _ in range(self.points)]
 
             # Place collectibles
-            collectibles = [self.place_collectible() for _ in range(self.collectibles)]
+            collectibles = [self.placeCollectables() for _ in range(self.collectibles)]
 
             # Ensure the map is clearable
-            if self.is_map_clearable(start, end, coins + collectibles):
+            if self.isMapClearable(start, end, coins + collectibles):
                 break
 
-    def place_coin(self):
+    def placeCoins(self):
         """ Place a coin in the map, avoiding positions between close walls """
         while True:
             x = random.randint(1, self.width - 2)
             y = random.randint(1, self.height - 2)
-            if self.map[y][x] == ' ' and not self.is_between_close_walls(x, y):
+            if self.map[y][x] == ' ' and not self.isBetweenClosedWalls(x, y):
                 self.map[y][x] = '$'
                 return (x, y)
 
-    def place_collectible(self):
+    def placeCollectables(self):
         """ Place a collectible in the map, ensuring it is reachable """
         while True:
             x = random.randint(1, self.width - 2)
@@ -53,7 +53,7 @@ class RandomMap:
                 self.map[y][x] = 'C'
                 return (x, y)
 
-    def is_between_close_walls(self, x, y):
+    def isBetweenClosedWalls(self, x, y):
         """ Check if a position is between two close walls horizontally with less than 3 spaces """
         count = 0
         for i in range(max(0, x-2), min(self.width, x+3)):
@@ -65,7 +65,7 @@ class RandomMap:
                 return True
         return False
 
-    def is_map_clearable(self, start, end, assets):
+    def isMapClearable(self, start, end, assets):
         """ Check if the map is clearable from start to end, collecting all assets """
         def bfs(start, goals):
             queue = [start]
@@ -88,12 +88,12 @@ class RandomMap:
 
         return bfs(start, {end} | set(assets))
 
-    def print_map(self):
+    def printMap(self):
         """ Print the map """
         for row in self.map:
             print("".join(row))
 
 if __name__ == '__main__':
-    random_map = RandomMap()
-    random_map.generate_map()
-    random_map.print_map()
+    random_map = MapGenerator()
+    random_map.generateMap()
+    random_map.printMap()
