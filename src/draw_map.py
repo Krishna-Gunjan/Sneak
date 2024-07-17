@@ -25,20 +25,22 @@ class GameMap:
         self.y_size = y_size
         self.theme = theme
         self.seeker_positions: List[List[int]] = []
+        self.coin_positions: List[List[int]] = []
 
     def resetGame (
             self
-        ) -> Tuple[List[int], List[List[int]]]:
+        ) -> Tuple[List[int], List[List[int]], List[List[int]]]:
         
         """
-        Reset the game by finding the player's start position and seekers' positions.
+        Reset the game by finding the player's start position, seekers' positions, and coin positions.
         
         Returns:
-            Tuple: Player's starting position and seekers' positions.
+            Tuple: Player's starting position, seekers' positions, and coin positions.
         """
         
         player_pos = None
         self.seeker_positions = []
+        self.coin_positions = []
 
         for y, row in enumerate(self.grid):
             for x, cell in enumerate(row):
@@ -46,24 +48,28 @@ class GameMap:
                     player_pos = [x, y]
                 elif cell == '$':
                     self.seeker_positions.append([x, y, 1])
+                elif cell == 'C':
+                    self.coin_positions.append([x, y])
         
-        return player_pos, self.seeker_positions
+        return player_pos, self.seeker_positions, self.coin_positions
 
     def drawGrid (
             self, 
             screen: pygame.Surface, 
             player_pos: List[int], 
             seeker_positions: List[List[int]], 
+            coin_positions: List[List[int]], 
             circle_radius: int
         ) -> None:
         
         """
-        Draw the grid, player, seekers, and the player's circle on the screen.
+        Draw the grid, player, seekers, coins, and the player's circle on the screen.
         
         Args:
             screen (pygame.Surface): The screen surface to draw on.
             player_pos (List[int]): The player's position.
             seeker_positions (List[List[int]]): The seekers' positions.
+            coin_positions (List[List[int]]): The coins' positions.
             circle_radius (int): The radius of the player's circle.
         """
         
@@ -79,6 +85,8 @@ class GameMap:
                     pygame.draw.rect(screen, self.theme['START_COLOR'], rect)
                 elif cell == 'E':
                     pygame.draw.rect(screen, self.theme['END_COLOR'], rect)
+                elif cell == 'C':
+                    pygame.draw.rect(screen, self.theme['COIN_COLOR'], rect)
 
         player_rect = pygame.Rect(player_pos[0] * self.x_size, player_pos[1] * self.y_size, self.x_size, self.y_size)
         pygame.draw.rect(screen, self.theme['START_COLOR'], player_rect)
@@ -86,6 +94,10 @@ class GameMap:
         for pos in seeker_positions:
             seeker_rect = pygame.Rect(pos[0] * self.x_size, pos[1] * self.y_size, self.x_size, self.y_size)
             pygame.draw.rect(screen, self.theme['SEEKER_COLOR'], seeker_rect)
+
+        for pos in coin_positions:
+            coin_rect = pygame.Rect(pos[0] * self.x_size, pos[1] * self.y_size, self.x_size, self.y_size)
+            pygame.draw.rect(screen, self.theme['COIN_COLOR'], coin_rect)
 
         circle_center = (player_pos[0] * self.x_size + self.x_size // 2, player_pos[1] * self.y_size + self.y_size // 2)
         pygame.draw.circle(screen, self.theme['CIRCLE_COLOR'], circle_center, circle_radius, 3)
@@ -110,17 +122,17 @@ class GameMap:
                 seeker[0] = new_x
             seeker[2] = direction
 
-    def checkCollisions (
+    def checkCollisions(
             self,
             player_pos: List[int], 
             seeker_positions: List[List[int]], 
             circle_radius: int, 
             x_size: float, 
             y_size: float
-        ) -> bool:
+        ) -> Tuple[bool, bool]:
         
         """
-        Check for collisions between the player and the seekers.
+        Check for collisions between the player and the seekers, and if the player collects a coin.
         
         Args:
             player_pos (List[int]): The player's position.
@@ -130,15 +142,32 @@ class GameMap:
             y_size (float): The height of each tile.
         
         Returns:
-            bool: True if a collision is detected, False otherwise.
+            Tuple[bool, bool]: indicates collision with seekers, second boolean indicates collection of a coin.
         """
         
+        seeker_collision = False
+        coin_collected = False
+        
+        # Check collision with seekers
         for seeker in seeker_positions:
             seeker_center = (seeker[0] * int(x_size) + int(x_size) // 2, seeker[1] * int(y_size) + int(y_size) // 2)
             circle_center = (player_pos[0] * int(x_size) + int(x_size) // 2, player_pos[1] * int(y_size) + int(y_size) // 2)
             distance = ((seeker_center[0] - circle_center[0]) ** 2 + (seeker_center[1] - circle_center[1]) ** 2) ** 0.5
 
             if distance < circle_radius + int(x_size) // 2:
-                return True
-            
-        return False
+                seeker_collision = True
+                break
+        
+        # Check collection of coins
+        for coin in self.coin_positions:
+            coin_center = (coin[0] * int(x_size) + int(x_size) // 2, coin[1] * int(y_size) + int(y_size) // 2)
+            distance = ((coin_center[0] - circle_center[0]) ** 2 + (coin_center[1] - circle_center[1]) ** 2) ** 0.5
+
+            if distance < int(x_size) // 2:
+                coin_collected = True
+                self.grid[coin[1]][coin[0]] = ' '
+                self.coin_positions.remove(coin)
+                print("coin")
+                break
+        
+        return seeker_collision, coin_collected

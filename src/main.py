@@ -26,15 +26,15 @@ class SeekerGame:
         # Initialize pygame
         pygame.init()
         pygame.font.init()
-
+        
         # Read theme
         self.theme: dict = read_theme(r'src\theme.json')
-
+        
         # Get screen dimensions
         self.screen_width: int
         self.screen_height: int
         self.screen_width, self.screen_height = get_screen_dimensions()
-
+        
         # Initialize Map Generator
         self.map_generator = MapGenerator()
         self.map_generator.generateMap()
@@ -43,31 +43,30 @@ class SeekerGame:
         self.grid: List[List[str]] = self.map_generator.map
         self.rows: int = len(self.grid)
         self.cols: int = len(self.grid[0])
-
+        
         # Calculate tile sizes
         self.x_size: float = self.screen_width / self.cols
         self.y_size: float = self.screen_height / self.rows
-
+        
         # Set up the initial screen
         self.display: Display = Display(self.screen_width, self.screen_height, self.x_size, self.y_size, self.theme)
         self.game_map: GameMap = GameMap(self.grid, self.x_size, self.y_size, self.theme)
-
+        
         # Set up player attributes
         self.player_pos: List[int]
         self.seeker_positions: List[List[int]]
-
-        self.player_pos, self.seeker_positions = self.game_map.resetGame()
+        self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
         self.clock: pygame.time.Clock = pygame.time.Clock()
-
+        
         # Initialize game management variable
         self.running: bool = True
         self.game_won: bool = False
         self.all_levels_cleared: bool = False
-
+        
         # Initial circle radius
         self.default_radius = 10
         self.initial_circle_radius: int = 10
-
+    
     def main_menu(self) -> None:
         """
         Display the main menu and wait for user input to start the game.
@@ -109,7 +108,7 @@ class SeekerGame:
                         self.y_size = self.screen_height / self.rows
                         # Update the screen to display new map
                         self.display.updateScreenSize(self.cols, self.rows)
-                        self.player_pos, self.seeker_positions = self.game_map.resetGame()
+                        self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                         self.game_won = False
                 elif event.type == pygame.QUIT:
                     pygame.quit()
@@ -163,7 +162,7 @@ class SeekerGame:
 
                     # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
-                    self.player_pos, self.seeker_positions = self.game_map.resetGame()
+                    self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
 
                     self.initial_circle_radius = self.default_radius
@@ -188,7 +187,7 @@ class SeekerGame:
 
                     # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
-                    self.player_pos, self.seeker_positions = self.game_map.resetGame()
+                    self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
                     
 
@@ -203,15 +202,16 @@ class SeekerGame:
         """
 
         # Update current game with new positions
-        self.game_map.drawGrid(self.display.screen, self.player_pos, self.seeker_positions, self.initial_circle_radius)
+        self.game_map.drawGrid(self.display.screen, self.player_pos, self.seeker_positions, self.coin_positions, self.initial_circle_radius)
         self.game_map.updateSeekers()
 
         # Check Collisions
-        if self.game_map.checkCollisions(self.player_pos, self.seeker_positions, self.initial_circle_radius, self.x_size, self.y_size):
-            
+        seeker_collision, coin_collision = self.game_map.checkCollisions(self.player_pos, self.seeker_positions, self.initial_circle_radius, self.x_size, self.y_size)
+        
+        if seeker_collision:
             # Check Collisions -> Passed
             self.initial_circle_radius = 10
-            self.player_pos, self.seeker_positions = self.game_map.resetGame()
+            self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
 
         # Check if player reach end
         if self.grid[self.player_pos[1]][self.player_pos[0]] == 'E':
@@ -258,12 +258,11 @@ class SeekerGame:
                     
                     # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
-                    self.player_pos, self.seeker_positions = self.game_map.resetGame()
+                    self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
 
         if not self.game_won:
             self.initial_circle_radius = max(self.default_radius, self.initial_circle_radius - 1)
-
 
 if __name__ == '__main__':
     game = SeekerGame()
