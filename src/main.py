@@ -86,11 +86,6 @@ class SeekerGame:
         # Coin Tracker
         self.coins = 0
 
-        # Initialise TaskBar
-        self.taskbar_height = 50
-        self.taskbar_color = (0, 0, 0)
-        self.taskbar_font_size = 30
-
     def take_screenshot(self, filename: str) -> None:
         """
         Take a screenshot of the current screen and save it to a file.
@@ -139,6 +134,7 @@ class SeekerGame:
                         # Generate new Map
                         self.map_generator.generateMap()
                         self.grid = self.map_generator.map
+                        self.game_map.coins_collected, self.game_map.seekers_collisions, self.start_time = 0, 0, pygame.time.get_ticks()
                         logging.info("New Map Generated")
 
                         self.game_map.grid = self.grid
@@ -151,13 +147,15 @@ class SeekerGame:
                         # Update the screen to display new map
                         self.display.updateScreenSize(self.cols, self.rows)
                         self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
+
+
                         logging.info("New Map Set")
                         self.game_won = False
 
-                elif event.key == pygame.K_1:
-                    self.take_screenshot(f"screenshot{self.n}.png")
-                    self.n += 1
-                    logging.info("Screenshot taken")
+                    elif event.key == pygame.K_1:
+                        self.take_screenshot(f"screenshot{self.n}.png")
+                        self.n += 1
+                        logging.info("Screenshot taken")
 
                 elif event.type == pygame.QUIT:
                     logging.info("Exiting Game....")
@@ -165,14 +163,16 @@ class SeekerGame:
                     sys.exit()
 
     def run(self) -> None:
-        """
-        Main game loop for running the game.
-        """
         self.main_menu()
         logging.debug("Main Menu Initialised")
 
+        self.start_time = pygame.time.get_ticks()
         while self.running:
             self.display.screen.fill(self.theme['BACKGROUND_COLOR'])
+
+            # Calculate elapsed time
+            if not self.game_won: elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
+            formatted_time = f"{elapsed_time // 60:02}:{elapsed_time % 60:02}"
 
             # Check Game winning conditions
             if self.game_won:
@@ -183,19 +183,33 @@ class SeekerGame:
                 self.handle_gameplay()
                 logging.info("Game Mechanics Handled")
 
+            # Draw taskbar with updated info
+            self.display.drawTaskbar(self.game_map.coins_collected, self.game_map.seekers_collisions, formatted_time)
+
             pygame.display.flip()
             self.clock.tick(10)
 
         pygame.quit()
         sys.exit()
 
+
     def handle_win(self) -> None:
         """
         Handle the win state of the game.
         """
 
-        # Display the win screen
-        self.display.showWinScreen(self.cols, self.rows)
+        # Calculate time taken in minutes and seconds
+        elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
+        formatted_time = f"{elapsed_time // 60:02}:{elapsed_time % 60:02}"
+
+        # Display the win screen with seeker collisions, time, and coins collected
+        self.display.showWinScreen(
+            self.cols, 
+            self.rows, 
+            self.game_map.seekers_collisions, 
+            self.time_taken, 
+            self.game_map.coins_collected
+        )
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -209,6 +223,7 @@ class SeekerGame:
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
+                    self.game_map.coins_collected, self.game_map.seekers_collisions, self.start_time = 0, 0, pygame.time.get_ticks()
                     logging.debug("New Map Generated")
 
                     # Get new map dimensions
@@ -222,7 +237,8 @@ class SeekerGame:
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
-                    logging.debug("New Entities Set")
+                        
+                    logging.debug("New Map Set")
                     self.initial_circle_radius = self.default_radius
 
                 elif event.key == pygame.K_ESCAPE:
@@ -239,6 +255,7 @@ class SeekerGame:
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
+                    self.game_map.coins_collected, self.game_map.seekers_collisions, self.start_time = 0, 0, pygame.time.get_ticks()
                     logging.info("New Map Generated")
                     # Get new map dimensions
                     self.rows, self.cols = len(self.grid), len(self.grid[0])
@@ -251,12 +268,14 @@ class SeekerGame:
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
+                    
+                        
                     logging.info("New Map Set")
             
-            elif event.key == pygame.K_1:
-                    self.take_screenshot(f"screenshot{self.n}.png")
-                    self.n += 1
-                    logging.info("Screenshot taken")
+                elif event.key == pygame.K_1:
+                        self.take_screenshot(f"screenshot{self.n}.png")
+                        self.n += 1
+                        logging.info("Screenshot taken")
 
             elif event.type == pygame.QUIT:
                 # User wants to end game
@@ -291,6 +310,8 @@ class SeekerGame:
         if self.grid[self.player_pos[1]][self.player_pos[0]] == 'E':
             # Check -> Passed
             self.game_won = True
+            elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
+            self.time_taken = f"{elapsed_time // 60:02}:{elapsed_time % 60:02}"
             logging.debug("Game Won")
 
         for event in pygame.event.get():
@@ -329,6 +350,7 @@ class SeekerGame:
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
+                    self.game_map.coins_collected, self.game_map.seekers_collisions, self.start_time = 0, 0, pygame.time.get_ticks()
                     logging.debug("New Map Generated")
 
                     # Get new map dimensions
@@ -342,6 +364,7 @@ class SeekerGame:
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
+
                     logging.debug("New Map Set")
 
                 elif event.key == pygame.K_1:

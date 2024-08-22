@@ -27,6 +27,10 @@ class GameMap:
         self.seeker_positions: List[List[int]] = []
         self.coin_positions: List[List[int]] = []
 
+        self.coins_collected = 0
+        self.seekers_collisions = 0
+
+
     def resetGame (
             self
         ) -> Tuple[List[int], List[List[int]], List[List[int]]]:
@@ -156,6 +160,7 @@ class GameMap:
 
             if distance < circle_radius + int(x_size) // 2:
                 seeker_collision = True
+                self.seekers_collisions += 1
                 break
         
         # Check collection of coins
@@ -167,6 +172,7 @@ class GameMap:
                 coin_collected = True
                 self.grid[coin[1]][coin[0]] = ' '
                 self.coin_positions.remove(coin)
+                self.coins_collected += 1
                 print("coin")
                 break
         
