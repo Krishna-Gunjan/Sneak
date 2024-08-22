@@ -93,61 +93,59 @@ class Display:
         rows: int, 
         seeker_collisions: int, 
         time_taken: str, 
-        coins_collected: int, 
-        all_levels_cleared: bool = False
+        coins_collected: int
     ) -> None:
-    
+
         """
         Display the win screen with the appropriate messages.
-        
+
         Args:
             cols (int): Number of columns in the grid.
             rows (int): Number of rows in the grid.
             seeker_collisions (int): Number of seeker collisions that occurred.
             time_taken (str): The time taken to complete the level.
             coins_collected (int): The number of coins collected by the player.
-            all_levels_cleared (bool): Flag indicating if all levels have been cleared.
         """
-    
+
         # Win Messages
         win_text = "YOU WON"
         collisions_text = f"Seeker Collisions: {seeker_collisions}"
         time_text = f"Time Taken: {time_taken}"
         coins_text = f"Coins Collected: {coins_collected}"
-        next_level_text = "Press SPACE to go to the next level"
         exit_text = "Press ESC to exit"
-    
+
         # Render win messages
-        win_surface = self.font.render(win_text, True, self.theme['TEXT_COLOR'])
-        collisions_surface = self.font.render(collisions_text, True, self.theme['TEXT_COLOR'])
-        time_surface = self.font.render(time_text, True, self.theme['TEXT_COLOR'])
-        coins_surface = self.font.render(coins_text, True, self.theme['TEXT_COLOR'])
-        next_level_surface = self.font.render(next_level_text, True, self.theme['TEXT_COLOR'])
-        exit_surface = self.font.render(exit_text, True, self.theme['TEXT_COLOR'])
-    
-        # Display win messages
-        self.screen.blit(win_surface, ((cols * int(self.x_size)) // 2 - win_surface.get_width() // 2, 
-                                       (rows * int(self.y_size)) // 2 - win_surface.get_height() // 2 - 100))
+        win_surface = self.font.render(win_text, True, self.theme['START_COLOR'])
+        collisions_surface = self.font.render(collisions_text, True, self.theme['SEEKER_COLOR'])
+        time_surface = self.font.render(time_text, True, self.theme['END_COLOR'])
+        coins_surface = self.font.render(coins_text, True, self.theme['COIN_COLOR'])
+        exit_surface = self.font.render(exit_text, True, self.theme['START_COLOR'])
+
+        # Calculate positions
+        center_x_position = self.screen_width // 2
         
-        # Display seeker collisions
-        self.screen.blit(collisions_surface, ((cols * int(self.x_size)) // 2 - collisions_surface.get_width() // 2, 
-                                              (rows * int(self.y_size)) // 2 - collisions_surface.get_height() // 2 - 60))
-        
-        # Display time taken
-        self.screen.blit(time_surface, ((cols * int(self.x_size)) // 2 - time_surface.get_width() // 2, 
-                                        (rows * int(self.y_size)) // 2 - time_surface.get_height() // 2 - 20))
-    
-        # Display coins collected
-        self.screen.blit(coins_surface, ((cols * int(self.x_size)) // 2 - coins_surface.get_width() // 2, 
-                                         (rows * int(self.y_size)) // 2 - coins_surface.get_height() // 2 + 20))
-    
-        # Check if game is not complete
-        if not all_levels_cleared:
-            # Display next level message
-            self.screen.blit(next_level_surface, ((cols * int(self.x_size)) // 2 - next_level_surface.get_width() // 2, 
-                                                  (rows * int(self.y_size)) // 2 - next_level_surface.get_height() // 2 + 60))
-    
+        top_padding = int(self.screen_height * 0.1)
+        vertical_spacing = int(self.screen_height * 0.05)  
+
+        # Display win message
+        self.screen.blit(win_surface, (center_x_position - win_surface.get_width() // 2, top_padding))
+
         # Display exit message
-        self.screen.blit(exit_surface, ((cols * int(self.x_size)) // 2 - exit_surface.get_width() // 2, 
-                                        (rows * int(self.y_size)) // 2 - exit_surface.get_height() // 2 + 100))
-    
+        self.screen.blit(exit_surface, (center_x_position - exit_surface.get_width() // 2, 
+                                        top_padding + win_surface.get_height() + vertical_spacing))
+
+        # Calculate positions
+        left_offset = int(center_x_position * 0.6) 
+        stats_start_y_position = top_padding + win_surface.get_height() + exit_surface.get_height() + vertical_spacing * 4
+
+        # Spacing between the stats
+        stats_spacing = int(self.screen_height * 0.1)
+
+        # Display seeker collisions 
+        self.screen.blit(collisions_surface, (left_offset, stats_start_y_position))
+
+        # Display time taken
+        self.screen.blit(time_surface, (left_offset, stats_start_y_position + stats_spacing))
+
+        # Display coins collected
+        self.screen.blit(coins_surface, (left_offset, stats_start_y_position + 2 * stats_spacing))

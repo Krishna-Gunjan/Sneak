@@ -171,8 +171,9 @@ class SeekerGame:
             self.display.screen.fill(self.theme['BACKGROUND_COLOR'])
 
             # Calculate elapsed time
-            if not self.game_won: elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
-            formatted_time = f"{elapsed_time // 60:02}:{elapsed_time % 60:02}"
+            if not self.game_won:
+                elapsed_time = (pygame.time.get_ticks() - self.start_time) // 1000
+                formatted_time = f"{elapsed_time // 60:02}:{elapsed_time % 60:02}"
 
             # Check Game winning conditions
             if self.game_won:
@@ -184,7 +185,8 @@ class SeekerGame:
                 logging.info("Game Mechanics Handled")
 
             # Draw taskbar with updated info
-            self.display.drawTaskbar(self.game_map.coins_collected, self.game_map.seekers_collisions, formatted_time)
+            if not self.game_won:
+                self.display.drawTaskbar(self.game_map.coins_collected, self.game_map.seekers_collisions, formatted_time)
 
             pygame.display.flip()
             self.clock.tick(10)
@@ -268,8 +270,7 @@ class SeekerGame:
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
-                    
-                        
+                             
                     logging.info("New Map Set")
             
                 elif event.key == pygame.K_1:
