@@ -2,6 +2,7 @@ import pygame
 import sys
 import json
 import os
+import logging
 from typing import List, Tuple
 from screen_dimension import get_screen_dimensions
 from map_reader import read_grid
@@ -9,12 +10,14 @@ from display import Display
 from draw_map import GameMap
 from read_theme import read_theme
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def add_to_path():
-    generator_path = os.path.abspath('src/generator/Model - 2')
-    sys.path.append(generator_path)
+    sys.path.append('/workspaces/Sneak/src/generator/Model - 2')
 
 add_to_path()
-from generator import MapGenerator
+from generator import MapGenerator 
 
 class SeekerGame:
     def __init__(self) -> None:
@@ -22,55 +25,63 @@ class SeekerGame:
         Initialize the SeekerGame class by setting up the 
         Game environment, load stages, load theme, and the map.
         """
+        logging.info("Initializing SeekerGame...")
 
         # Initialize pygame
         pygame.init()
         pygame.font.init()
-        
+        logging.debug("Pygame initialized.")
+
         # Read theme
-        self.theme: dict = read_theme(r'src\theme.json')
-        
+        self.theme: dict = read_theme(r'src/theme.json')
+        logging.info("Theme loaded.")
+
         # Get screen dimensions
         self.screen_width: int
         self.screen_height: int
         self.screen_width, self.screen_height = get_screen_dimensions()
-        
+        logging.info(f"Screen dimensions set: {self.screen_width}x{self.screen_height}")
+
         # Initialize Map Generator
         self.map_generator = MapGenerator()
         self.map_generator.generateMap()
-        
+        logging.info("Map generated.")
+
         # Load initial grid
         self.grid: List[List[str]] = self.map_generator.map
         self.rows: int = len(self.grid)
         self.cols: int = len(self.grid[0])
-        
+        logging.debug(f"Initial grid loaded with dimensions {self.rows}x{self.cols}")
+
         # Calculate tile sizes
         self.x_size: float = self.screen_width / self.cols
         self.y_size: float = self.screen_height / self.rows
-        
+
         # Set up the initial screen
         self.display: Display = Display(self.screen_width, self.screen_height, self.x_size, self.y_size, self.theme)
         self.game_map: GameMap = GameMap(self.grid, self.x_size, self.y_size, self.theme)
-        
+
         # Set up player attributes
         self.player_pos: List[int]
         self.seeker_positions: List[List[int]]
         self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
         self.clock: pygame.time.Clock = pygame.time.Clock()
-        
-        # Initialize game management variable
+
+        # Initialize game management variables
         self.running: bool = True
         self.game_won: bool = False
         self.all_levels_cleared: bool = False
-        
+
         # Initial circle radius
         self.default_radius = 10
         self.initial_circle_radius: int = 10
-    
+        logging.info("Game initialized successfully.")
+
     def main_menu(self) -> None:
         """
         Display the main menu and wait for user input to start the game.
         """
+        logging.info("Displaying main menu.")
         while True:
             self.display.screen.fill(self.theme['BACKGROUND_COLOR'])
 
@@ -93,24 +104,25 @@ class SeekerGame:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        logging.info("Starting the game from the main menu.")
                         return
                     elif event.key == pygame.K_ESCAPE:
+                        logging.info("Exiting the game from the main menu.")
                         pygame.quit()
                         sys.exit()
                     elif event.key == pygame.K_r:
+                        logging.info("Generating a new map from the main menu.")
                         self.map_generator.generateMap()
                         self.grid = self.map_generator.map
                         self.game_map.grid = self.grid
-                        # Get new map dimensions
                         self.rows, self.cols = len(self.grid), len(self.grid[0])
-                        # Calculate tile size
                         self.x_size = self.screen_width / self.cols
                         self.y_size = self.screen_height / self.rows
-                        # Update the screen to display new map
                         self.display.updateScreenSize(self.cols, self.rows)
                         self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                         self.game_won = False
                 elif event.type == pygame.QUIT:
+                    logging.info("Exiting the game from the main menu.")
                     pygame.quit()
                     sys.exit()
 
@@ -119,10 +131,10 @@ class SeekerGame:
         Main game loop for running the game.
         """
         self.main_menu()
+        logging.info("Game started.")
         while self.running:
             self.display.screen.fill(self.theme['BACKGROUND_COLOR'])
 
-            # Check Game winning conditions
             if self.game_won:
                 self.handle_win()
             else:
@@ -138,61 +150,40 @@ class SeekerGame:
         """
         Handle the win state of the game.
         """
-
-        # Display the win screen
+        logging.info("Handling win state.")
         self.display.showWinScreen(self.cols, self.rows)
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-
-                # If user continues to the next stage
                 if event.key == pygame.K_SPACE:
-
-                    # Read next stage map
+                    logging.info("Proceeding to the next level.")
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
-
-                    # Get new map dimensions
                     self.rows, self.cols = len(self.grid), len(self.grid[0])
-
-                    # Calculate tile size
                     self.x_size = self.screen_width / self.cols
                     self.y_size = self.screen_height / self.rows
-
-                    # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
-
                     self.initial_circle_radius = self.default_radius
-
                 elif event.key == pygame.K_ESCAPE:
-                    # User wants to end game
+                    logging.info("Exiting to the main menu from win screen.")
                     self.running = False
                     self.main_menu()
-
                 elif event.key == pygame.K_r:
-
+                    logging.info("Restarting the game from win screen.")
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
-
-                    # Get new map dimensions
                     self.rows, self.cols = len(self.grid), len(self.grid[0])
-
-                    # Calculate tile size
                     self.x_size = self.screen_width / self.cols
                     self.y_size = self.screen_height / self.rows
-
-                    # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
-                    
-
             elif event.type == pygame.QUIT:
-                # User wants to end game
+                logging.info("Exiting the game from win screen.")
                 self.running = False
 
     def handle_gameplay(self) -> None:
@@ -200,32 +191,26 @@ class SeekerGame:
         Handle the gameplay mechanics, including 
         drawing the map, updating seeker movements, and handling player input.
         """
-
-        # Update current game with new positions
+        logging.debug("Handling gameplay.")
         self.game_map.drawGrid(self.display.screen, self.player_pos, self.seeker_positions, self.coin_positions, self.initial_circle_radius)
         self.game_map.updateSeekers()
 
-        # Check Collisions
         seeker_collision, coin_collision = self.game_map.checkCollisions(self.player_pos, self.seeker_positions, self.initial_circle_radius, self.x_size, self.y_size)
-        
+
         if seeker_collision:
-            # Check Collisions -> Passed
+            logging.info("Seeker collision detected. Resetting game state.")
             self.initial_circle_radius = 10
             self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
 
-        # Check if player reach end
         if self.grid[self.player_pos[1]][self.player_pos[0]] == 'E':
-            # Check -> Passed
+            logging.info("Player reached the end. Game won.")
             self.game_won = True
 
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
-                # Users end game
+                logging.info("Exiting the game.")
                 self.running = False
-
             elif event.type == pygame.KEYDOWN:
-                # Update player position
                 new_pos: List[int] = self.player_pos[:]
                 if event.key == pygame.K_LEFT:
                     new_pos[0] -= 1
@@ -236,27 +221,21 @@ class SeekerGame:
                 elif event.key == pygame.K_DOWN:
                     new_pos[1] += 1
                 if self.grid[new_pos[1]][new_pos[0]] != '#':
+                    logging.debug(f"Player moved to position: {new_pos}")
                     self.player_pos = new_pos
-
-                    # Update circle radius
                     self.initial_circle_radius += 4
 
                 if event.key == pygame.K_ESCAPE:
+                    logging.info("Returning to the main menu from gameplay.")
                     self.main_menu()
-
                 elif event.key == pygame.K_r:
+                    logging.info("Restarting game from gameplay.")
                     self.map_generator.generateMap()
                     self.grid = self.map_generator.map
                     self.game_map.grid = self.grid
-
-                    # Get new map dimensions
                     self.rows, self.cols = len(self.grid), len(self.grid[0])
-
-                    # Calculate tile size
                     self.x_size = self.screen_width / self.cols
                     self.y_size = self.screen_height / self.rows
-                    
-                    # Update the screen to display new map
                     self.display.updateScreenSize(self.cols, self.rows)
                     self.player_pos, self.seeker_positions, self.coin_positions = self.game_map.resetGame()
                     self.game_won = False
@@ -265,5 +244,6 @@ class SeekerGame:
             self.initial_circle_radius = max(self.default_radius, self.initial_circle_radius - 1)
 
 if __name__ == '__main__':
+    logging.info("Starting SeekerGame...")
     game = SeekerGame()
     game.run()

@@ -1,11 +1,12 @@
-import ctypes
+import pygame
 
 def get_screen_dimensions():
     
     # Refer to the comment in src/read_theme.py
 
-    user32 = ctypes.windll.user32
-    screen_width = user32.GetSystemMetrics(0)
-    screen_height = user32.GetSystemMetrics(1)
+    pygame.init()
+    info = pygame.display.Info()
+    screen_width = info.current_w
+    screen_height = info.current_h
     
     return screen_width, screen_height
