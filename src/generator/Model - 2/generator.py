@@ -2,7 +2,7 @@ import random
 import time
 
 class MapGenerator:
-    def __init__(self, width=68, height=15, seekers=15, collectibles=5):
+    def __init__(self, width=68, height=15, seekers=10, collectibles=10):
         self.width = width
         self.height = height
         self.seekers = seekers

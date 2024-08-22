@@ -1,12 +1,12 @@
 {
-    "WALL_COLOR": [102, 113, 126],
-    "SEEKER_COLOR": [255, 255, 0],
-    "START_COLOR": [255, 0, 0],
+    "WALL_COLOR": [43, 40, 33],
+    "SEEKER_COLOR": [176, 58, 72],
+    "START_COLOR": [227, 207, 180],
     "END_COLOR": [0, 255, 0],
     "BACKGROUND_COLOR": [0, 0, 0],
-    "CIRCLE_COLOR": [255, 0, 0],
+    "CIRCLE_COLOR": [212, 128, 77],
     "TEXT_COLOR": [255, 255, 255],
-    "COIN_COLOR": [255, 255, 255],
+    "COIN_COLOR": [224, 200, 114],
 
     "comment_" : "Hello there! Read comment_ and comment__ for more info",
     "comment__" : "This file manages the diffrent color scheme, definitely not from coolors",
