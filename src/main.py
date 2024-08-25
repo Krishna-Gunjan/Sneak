@@ -39,7 +39,7 @@ class SeekerGame:
         
         # Read theme
         theme_path = Path('src') / 'theme.json'
-        self.theme: dict = read_theme(r'src\theme.json')
+        self.theme: dict = read_theme(theme_path)
         logging.info("Theme initialised")
         
         # Get screen dimensions
