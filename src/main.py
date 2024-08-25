@@ -38,6 +38,7 @@ class SeekerGame:
         logging.debug("pygame initialised")
         
         # Read theme
+        theme_path = Path('src') / 'theme.json'
         self.theme: dict = read_theme(r'src\theme.json')
         logging.info("Theme initialised")
         
