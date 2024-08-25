@@ -9,17 +9,17 @@ from display import Display
 from draw_map import GameMap
 from read_theme import read_theme
 
-
-
 import logging
+from pathlib import Path
+
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s'  
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 def add_to_path():
-    generator_path = os.path.abspath('src/generator/Model - 2')
-    sys.path.append(generator_path)
+    generator_path = Path('src/generator/Model - 2').resolve()
+    sys.path.append(str(generator_path))
 
 add_to_path()
 from generator import MapGenerator
